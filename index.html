@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto Integrador — Microinformática Aplicada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560;9..144,680&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E1420;
+    --bg-panel: #141B2B;
+    --bg-panel-2: #1A2338;
+    --line: #2A3550;
+    --ink: #EDEFF5;
+    --ink-dim: #9AA5BD;
+    --ink-faint: #5C6683;
+    --accent: #E8A33D;
+
+    --c-mob: #3AAFD9;
+    --c-mob-soft: rgba(58,175,217,0.14);
+    --c-mkt: #E8A33D;
+    --c-mkt-soft: rgba(232,163,61,0.14);
+    --c-tur: #34C58E;
+    --c-tur-soft: rgba(52,197,142,0.14);
+    --c-sau: #E8637A;
+    --c-sau-soft: rgba(232,99,122,0.14);
+    --c-var: #A47CF0;
+    --c-var-soft: rgba(164,124,240,0.14);
+    --c-none: #5C6683;
+    --c-none-soft: rgba(92,102,131,0.14);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 600px at 12% -10%, rgba(58,175,217,0.10), transparent 60%),
+      radial-gradient(900px 500px at 90% 0%, rgba(164,124,240,0.10), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Fraunces', serif;}
+  code, .mono, .ra, .badge-code{font-family:'IBM Plex Mono', monospace;}
+
+  a{color:inherit;}
+  ::selection{background:var(--c-mkt); color:#111;}
+
+  /* ---------- Layout shell ---------- */
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+  header.top{
+    padding:56px 0 34px;
+    border-bottom:1px solid var(--line);
+  }
+  .crumb{
+    display:flex; flex-wrap:wrap; gap:8px 14px;
+    font-size:13px; color:var(--ink-dim); margin-bottom:26px;
+    align-items:center;
+  }
+  .crumb b{color:var(--ink); font-weight:600;}
+  .crumb .dot{width:4px;height:4px;border-radius:50%;background:var(--ink-faint); display:inline-block;}
+
+  .hero-title{
+    display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap;
+  }
+  h1.display{
+    font-size:clamp(42px, 6vw, 74px);
+    line-height:0.98;
+    font-weight:680;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:clamp(18px, 2.2vw, 26px);
+    color:var(--c-mkt);
+    margin:10px 0 0;
+  }
+  .hero-meta{
+    text-align:right;
+    font-size:13px;
+    color:var(--ink-dim);
+    line-height:1.8;
+    min-width:190px;
+  }
+  .hero-meta b{color:var(--ink); font-weight:600;}
+
+  /* ---------- Pipeline strip ---------- */
+  .pipeline{
+    margin-top:40px;
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+  .pipe-node{
+    flex:1 0 auto;
+    min-width:118px;
+    text-align:center;
+    padding:14px 10px;
+    position:relative;
+  }
+  .pipe-node .dot{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--ink-faint);
+    margin:0 auto 10px;
+  }
+  .pipe-node.done .dot{background:var(--c-tur);}
+  .pipe-node .lbl{font-size:12.5px; color:var(--ink-dim); font-weight:500;}
+  .pipe-node::after{
+    content:"";
+    position:absolute; top:19px; left:50%; width:100%; height:1px;
+    background:var(--line); z-index:0;
+  }
+  .pipe-node:last-child::after{display:none;}
+
+  /* ---------- Nav tabs ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:40;
+    background:rgba(14,20,32,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.tabs .wrap{display:flex; gap:2px; overflow-x:auto;}
+  nav.tabs button{
+    background:none; border:none; cursor:pointer;
+    color:var(--ink-dim);
+    font-family:'Inter',sans-serif;
+    font-size:14.5px; font-weight:500;
+    padding:18px 18px 15px;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.tabs button:hover{color:var(--ink);}
+  nav.tabs button.active{color:var(--ink); border-bottom-color:var(--c-mkt);}
+
+  section.view{display:none; padding:48px 0 90px; animation:fade .35s ease;}
+  section.view.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+  .section-head{margin-bottom:30px;}
+  .section-head .eyebrow{color:var(--ink-faint); font-size:13px; margin-bottom:6px;}
+  .section-head h2{font-size:30px; font-weight:560; margin:0 0 8px;}
+  .section-head p{color:var(--ink-dim); font-size:15px; max-width:620px; line-height:1.55; margin:0;}
+
+  /* ---------- Orbit (temas) ---------- */
+  .orbit-shell{
+    position:relative;
+    max-width:760px; margin:56px auto 20px;
+    aspect-ratio:1/1;
+  }
+  .orbit-ring{
+    position:absolute; inset:0; border-radius:50%;
+    border:1px dashed var(--line);
+  }
+  .orbit-hub{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:150px; height:150px; border-radius:50%;
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font-family:'Fraunces',serif; font-size:14.5px; line-height:1.3; padding:10px;
+    box-shadow: 0 0 0 10px rgba(20,27,43,0.5);
+  }
+  .pin{
+    position:absolute;
+    width:130px;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    cursor:pointer;
+  }
+  .pin .head{
+    width:52px; height:52px; border-radius:50%;
+    margin:0 auto 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    border:1px solid var(--line);
+    background:var(--bg-panel-2);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .pin:hover .head, .pin.active .head{transform:scale(1.12);}
+  .pin .lbl{font-size:12.5px; font-weight:600; color:var(--ink); line-height:1.25;}
+  .pin .count{font-size:11px; color:var(--ink-faint); margin-top:2px;}
+
+  /* ---------- Theme detail panel ---------- */
+  .tema-detail{
+    margin-top:26px;
+    border:1px solid var(--line);
+    background:var(--bg-panel);
+    border-radius:18px;
+    padding:34px;
+    display:none;
+  }
+  .tema-detail.active{display:block;}
+  .tema-detail .tag{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:600; letter-spacing:.02em;
+    padding:5px 12px; border-radius:100px;
+    margin-bottom:16px;
+  }
+  .tema-detail h3{font-size:25px; margin:0 0 6px; font-weight:600;}
+  .tema-detail .central{color:var(--ink-dim); font-size:15px; margin:0 0 22px; max-width:680px; line-height:1.55;}
+  .tema-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px 30px;}
+  @media(max-width:720px){.tema-grid{grid-template-columns:1fr;}}
+  .tema-field h4{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); margin:0 0 6px; font-weight:600;}
+  .tema-field p{margin:0; font-size:14.5px; color:var(--ink); line-height:1.55;}
+  .tema-teams{margin-top:24px; padding-top:22px; border-top:1px solid var(--line);}
+  .tema-teams h4{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); margin:0 0 12px; font-weight:600;}
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+
+  /* ---------- Chips / badges ---------- */
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px; font-weight:500;
+    padding:5px 10px; border-radius:8px;
+    border:1px solid var(--line);
+    cursor:pointer;
+    background:var(--bg-panel-2);
+    transition:transform .12s ease;
+  }
+  .chip:hover{transform:translateY(-1px);}
+
+  /* ---------- Lookup ---------- */
+  .lookup-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:44px;}
+  @media(max-width:760px){.lookup-grid{grid-template-columns:1fr;}}
+  .lookup-card{
+    border:1px solid var(--line); background:var(--bg-panel);
+    border-radius:16px; padding:24px;
+  }
+  .lookup-card h3{margin:0 0 4px; font-size:17px; font-weight:600;}
+  .lookup-card .hint{color:var(--ink-faint); font-size:13px; margin:0 0 16px;}
+  .lookup-row{display:flex; gap:8px;}
+  input[type="text"], select{
+    width:100%;
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:11px 13px;
+    border-radius:10px;
+    font-size:14.5px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  select{font-family:'Inter',sans-serif;}
+  input::placeholder{color:var(--ink-faint); font-family:'Inter',sans-serif;}
+  input:focus, select:focus{outline:2px solid var(--c-mkt); outline-offset:1px;}
+  button.go{
+    background:var(--c-mkt); border:none; color:#161006; font-weight:600;
+    padding:0 18px; border-radius:10px; cursor:pointer; font-size:14px;
+  }
+  .lookup-result{
+    margin-top:16px; padding-top:16px; border-top:1px dashed var(--line);
+    font-size:14.5px; min-height:20px; color:var(--ink-dim); line-height:1.6;
+  }
+  .lookup-result .found-name{color:var(--ink); font-weight:600; font-family:'Inter',sans-serif;}
+  .lookup-result .found-team{font-family:'IBM Plex Mono',monospace;}
+  .member-list{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:6px;}
+  .member-list li{
+    display:flex; justify-content:space-between; gap:12px;
+    padding:7px 10px; background:var(--bg-panel-2); border-radius:8px; font-size:13.5px;
+  }
+  .member-list .m-ra{color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; font-size:12px;}
+
+  /* ---------- Team cards ---------- */
+  .filter-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:26px;}
+  .filter-btn{
+    border:1px solid var(--line); background:var(--bg-panel);
+    color:var(--ink-dim); font-size:13px; font-weight:500;
+    padding:8px 14px; border-radius:100px; cursor:pointer;
+    display:flex; align-items:center; gap:7px;
+  }
+  .filter-btn .sw{width:8px; height:8px; border-radius:50%;}
+  .filter-btn.active{color:var(--ink); border-color:currentColor;}
+
+  .team-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:16px;
+  }
+  .team-card{
+    border:1px solid var(--line); border-radius:14px;
+    background:var(--bg-panel);
+    padding:18px 18px 16px;
+    border-left:3px solid var(--c-none);
+    cursor:pointer;
+  }
+  .team-card .tc-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  .team-card .tc-code{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:15px;}
+  .team-card .tc-n{font-size:12px; color:var(--ink-faint);}
+  .team-card .tc-tema{font-size:12.5px; color:var(--ink-dim); line-height:1.4; min-height:34px;}
+  .team-card .tc-members{
+    margin-top:12px; padding-top:12px; border-top:1px solid var(--line);
+    display:none; flex-direction:column; gap:5px;
+  }
+  .team-card.open .tc-members{display:flex;}
+  .team-card .tc-members span{font-size:13px; color:var(--ink); display:flex; justify-content:space-between; gap:8px;}
+  .team-card .tc-members span em{font-style:normal; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; font-size:11.5px;}
+
+  /* ---------- No-team table ---------- */
+  .warn-box{
+    margin-top:52px; border:1px solid rgba(232,99,122,0.35);
+    background:rgba(232,99,122,0.06); border-radius:16px; padding:26px 28px;
+  }
+  .warn-box h3{margin:0 0 4px; font-size:18px; color:#F0899A;}
+  .warn-box p{margin:0 0 18px; color:var(--ink-dim); font-size:14px;}
+  .noteam-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:8px;}
+  .noteam-item{
+    background:var(--bg-panel-2); border:1px solid var(--line); border-radius:9px;
+    padding:9px 12px; font-size:13.5px; display:flex; justify-content:space-between; gap:8px;
+  }
+  .noteam-item .m-ra{font-family:'IBM Plex Mono',monospace; color:var(--ink-faint); font-size:11.5px;}
+
+  /* ---------- Matrix view ---------- */
+  .matrix-group{margin-bottom:34px;}
+  .matrix-group .mg-head{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .matrix-group .sw{width:11px;height:11px;border-radius:50%;}
+  .matrix-group h3{font-size:17px; margin:0; font-weight:600;}
+  .matrix-group .mg-count{color:var(--ink-faint); font-size:13px;}
+  .matrix-teams{display:flex; flex-wrap:wrap; gap:10px;}
+  .matrix-team{
+    border:1px solid var(--line); border-radius:11px; padding:10px 14px;
+    background:var(--bg-panel); min-width:140px;
+  }
+  .matrix-team .mt-code{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13.5px;}
+  .matrix-team .mt-n{font-size:11.5px; color:var(--ink-faint); margin-top:2px;}
+
+  footer{
+    border-top:1px solid var(--line); padding:26px 0 50px;
+    color:var(--ink-faint); font-size:12.5px; text-align:center;
+  }
+
+  ::-webkit-scrollbar{height:6px; width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="crumb">
+      <b>Fatec São Paulo</b><span class="dot"></span>
+      <span>Análise e Desenvolvimento de Sistemas</span><span class="dot"></span>
+      <span>Microinformática Aplicada</span>
+    </div>
+    <div class="hero-title">
+      <div>
+        <h1 class="display">Projeto Integrador</h1>
+        <p class="subtitle">Projeto Evolutivo de Dados</p>
+      </div>
+      <div class="hero-meta">
+        <div><b>Prof. Veríssimo</b></div>
+        <div>2º semestre · 2026</div>
+        <div>ILP590</div>
+      </div>
+    </div>
+
+    <div class="pipeline" id="pipeline">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <button class="tab-btn active" data-view="visao">Visão Geral</button>
+    <button class="tab-btn" data-view="buscar">Buscar Aluno / Equipe</button>
+    <button class="tab-btn" data-view="equipes">Todas as Equipes</button>
+    <button class="tab-btn" data-view="matriz">Equipe × Tema</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ===================== VISÃO GERAL ===================== -->
+  <section class="view active" id="view-visao">
+    <div class="section-head">
+      <div class="eyebrow">Os cinco temas do projeto</div>
+      <h2>Um tema, um dataset, um caminho até o dashboard</h2>
+      <p>Cada equipe sorteou um dos cinco temas abaixo na Aula 1. Toque em um ponto para abrir o detalhamento completo — contexto, fontes de dados, indicadores e o resultado esperado no Power BI.</p>
+    </div>
+
+    <div class="orbit-shell" id="orbitShell">
+      <div class="orbit-ring"></div>
+      <div class="orbit-hub">Projeto<br>Evolutivo<br>de Dados</div>
+      <!-- pins filled by JS -->
+    </div>
+
+    <div id="temaDetailWrap"></div>
+  </section>
+
+  <!-- ===================== BUSCAR ===================== -->
+  <section class="view" id="view-buscar">
+    <div class="section-head">
+      <div class="eyebrow">Localização rápida</div>
+      <h2>Encontre um aluno ou uma equipe</h2>
+      <p>Digite o RA para saber a equipe de um aluno, ou escolha uma equipe para ver todos os seus integrantes e o tema sorteado.</p>
+    </div>
+
+    <div class="lookup-grid">
+      <div class="lookup-card">
+        <h3>Buscar por RA</h3>
+        <p class="hint">Informe o RA do aluno (ex.: 20482523057) para localizar sua equipe.</p>
+        <div class="lookup-row">
+          <input type="text" id="raInput" placeholder="Digite o RA…" inputmode="numeric">
+          <button class="go" id="raBtn">Buscar</button>
+        </div>
+        <div class="lookup-result" id="raResult">Aguardando busca.</div>
+      </div>
+
+      <div class="lookup-card">
+        <h3>Buscar por Equipe</h3>
+        <p class="hint">Selecione o código da equipe para ver a lista de integrantes.</p>
+        <div class="lookup-row">
+          <select id="teamSelect"></select>
+        </div>
+        <div class="lookup-result" id="teamResult">Selecione uma equipe.</div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <h3>Alunos sem equipe definida</h3>
+      <p id="noteamCount"></p>
+      <div class="noteam-grid" id="noteamGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== EQUIPES ===================== -->
+  <section class="view" id="view-equipes">
+    <div class="section-head">
+      <div class="eyebrow">Todas as equipes</div>
+      <h2>25 equipes, cinco temas</h2>
+      <p>Filtre por tema e toque em um cartão para abrir a lista de integrantes.</p>
+    </div>
+    <div class="filter-row" id="filterRow"></div>
+    <div class="team-grid" id="teamGrid"></div>
+  </section>
+
+  <!-- ===================== MATRIZ ===================== -->
+  <section class="view" id="view-matriz">
+    <div class="section-head">
+      <div class="eyebrow">Panorama</div>
+      <h2>Equipes agrupadas por tema</h2>
+      <p>Visão consolidada de quais equipes ficaram com cada tema sorteado.</p>
+    </div>
+    <div id="matrixWrap"></div>
+  </section>
+
+</main>
+
+<footer>
+  Microinformática Aplicada (ILP590) · Prof. Veríssimo · Fatec São Paulo — Centro Paula Souza
+</footer>
+
+<script>
+const TEAM_DATA = {"teams": {"EQP01": {"tema": "Varejo e E-commerce: desempenho de vendas, logística e clientes", "membros": [{"ra": "20482523056", "nome": "DIEGO SANDRI GUERREIRO"}, {"ra": "20482523063", "nome": "GUSTAVO SANTOS SILVA"}, {"ra": "20482523068", "nome": "JORGE LUCAS ALVES DA SILVA"}, {"ra": "20482523074", "nome": "JULIANA LUCIA DOS SANTOS SILVA"}, {"ra": "20482523041", "nome": "LARISSA AYUMI TAIRA"}, {"ra": "20482523072", "nome": "PEDRO MITSUO YAMAUCHI"}, {"ra": "20482523043", "nome": "TIAGO MURATORI DIAS"}]}, "EQP02": {"tema": "Mercado de Trabalho em Tecnologia: vagas, salários e habilidades", "membros": [{"ra": "20482523019", "nome": "ANDRÉ ASSEITUNO MENDES DE OLIVEIRA"}, {"ra": "20482523032", "nome": "BEATRIZ CRISTINA TAVEIRA PAZ"}, {"ra": "20482523012", "nome": "GUSTAVO VICENTE PARDINI"}]}, "EQP03": {"tema": "Mobilidade Urbana: monitoramento do transporte público", "membros": [{"ra": "20482423006", "nome": "BIANCA SILVA NUNES"}, {"ra": "20482423005", "nome": "EDUARDO SOUZA CASTRO"}, {"ra": "20482423014", "nome": "GUILHERME FERNANDES SILVA"}, {"ra": "20482423025", "nome": "LUCAS VINICIUS BATISTA BESERRA"}, {"ra": "20482423007", "nome": "MURILO JOSE GONZAGA DE SANTANA"}]}, "EQP04": {"tema": "Mercado de Trabalho em Tecnologia: vagas, salários e habilidades", "membros": [{"ra": "20482523053", "nome": "BRENO BRITO RIBEIRO SILVA"}, {"ra": "20482523069", "nome": "LUCAS OLIVEIRA DE LIMA"}, {"ra": "20482523050", "nome": "RAFAEL JOSE CANUTO RODRIGUES"}, {"ra": "20482523084", "nome": "RENAN GABRIEL VIEIRA"}]}, "EQP05": {"tema": "Mobilidade Urbana: monitoramento do transporte público", "membros": [{"ra": "20482322017", "nome": "BRUNO FERNANDO HONORIO"}, {"ra": "20482322039", "nome": "GIOVANNA AMANDA ASSATO NAKASONE"}, {"ra": "20482412040", "nome": "KARLA EDUARDA DE SOUZA FAUSTINO"}, {"ra": "20482421014", "nome": "PABLO ALVES NERI"}, {"ra": "20482322014", "nome": "VITOR HUGO MONTUAN PATRICIO"}]}, "EQP06": {"tema": "Mercado de Trabalho em Tecnologia: vagas, salários e habilidades", "membros": [{"ra": "20482313020", "nome": "CARLOS DIOGENES SILVA DO NASCIMENTO"}, {"ra": "20482423011", "nome": "PEDRO HENRIQUE SANTOS BUENO"}]}, "EQP07": {"tema": "Mobilidade Urbana: monitoramento do transporte público", "membros": [{"ra": "20482423074", "nome": "BRUNO DE CASTRO FERREIRA"}, {"ra": "20482423008", "nome": "GABRIEL DOS SANTOS AVELINO"}, {"ra": "20482423031", "nome": "GUILHERME DE SA MITA ZAMPIERI"}, {"ra": "20482423034", "nome": "GUILHERME RAMOS DUARTE"}, {"ra": "20482423076", "nome": "MATEUS BENICIO SOUZA DE ANDRADE"}]}, "EQP08": {"tema": "Varejo e E-commerce: desempenho de vendas, logística e clientes", "membros": [{"ra": "20482523039", "nome": "CARYBE GONCALVES SILVA"}, {"ra": "20482623082", "nome": "DANIEL VICTOR BRESCIA DOS SANTOS"}, {"ra": "20482623087", "nome": "RENATO RODRIGUES DOS SANTOS JUNIOR"}, {"ra": "20482413079", "nome": "ROGER HOKAMA PAIXAO"}, {"ra": "20482623080", "nome": "VICTOR MARGINI GOMES DA SILVA"}]}, "EQP09": {"tema": "Mercado de Trabalho em Tecnologia: vagas, salários e habilidades", "membros": [{"ra": "20482522004", "nome": "CRISTIAN BERNARDES FERREIRA"}, {"ra": "20482522007", "nome": "KAUAN DA SILVA PERES"}, {"ra": "20482522041", "nome": "LUCAS TEIXEIRA DE MORAES"}]}, "EQP10": {"tema": "Mobilidade Urbana: monitoramento do transporte público", "membros": [{"ra": "20482523033", "nome": "LUCIANO OLIVEIRA GOMES"}, {"ra": "20482523024", "nome": "MARYELE NAARA FREITAS MEIRA"}, {"ra": "20482523006", "nome": "NICOLLY SANTOS DO NASCIMENTO"}, {"ra": "20482523002", "nome": "VICTOR LIMA CONCEICAO"}]}, "EQP11": {"tema": "Saúde Pública: indicadores epidemiológicos e hospitalares", "membros": [{"ra": "20482422021", "nome": "ENZO OLIVEIRA MALZONE"}, {"ra": "20482422014", "nome": "JOAO PEDRO SOUZA PINTO"}, {"ra": "20482422023", "nome": "LEONARDO CHANG WOO LEE"}, {"ra": "20482413091", "nome": "MATHEUS RODRIGUES FELIX DA SILVA"}]}, "EQP12": {"tema": "Saúde Pública: indicadores epidemiológicos e hospitalares", "membros": [{"ra": "20482513044", "nome": "ENZO HILAN SANTOS DE LIMA"}, {"ra": "20482623084", "nome": "GUILHERME CAETANO MARTINEZ"}, {"ra": "20482523026", "nome": "GUSTAVO PARAVATTI MEDEIROS"}, {"ra": "20482523038", "nome": "IVAR YUNIOR TORREZ PACOSILLO"}, {"ra": "20482623089", "nome": "JOÃO FELLIPE DE SOUZA"}, {"ra": "20482523004", "nome": "PEDRO ASSIS ARAUJO DOS SANTOS"}]}, "EQP13": {"tema": "Turismo e Eventos: ocupação, sazonalidade e avaliações", "membros": [{"ra": "20482413002", "nome": "AMANDA VELOSO RODRIGUES"}, {"ra": "20482623086", "nome": "ENRICO YURI FLORENCIO DE OLIVEIRA"}, {"ra": "20482623085", "nome": "EUDÓCIO VICENTE SILVA WASHIMI"}, {"ra": "20482623092", "nome": "JEAN AMARAL DA SILVA"}, {"ra": "20482522044", "nome": "RAFAEL OLIVEIRA DOS SANTOS"}]}, "EQP14": {"tema": "Varejo e E-commerce: desempenho de vendas, logística e clientes", "membros": [{"ra": "20482523067", "nome": "GABRIEL DAMASCENO ALMEIDA"}, {"ra": "20482523040", "nome": "LORRAN BARROS NAZARETH"}, {"ra": "20482523062", "nome": "RAFAEL ALVES TEIXEIRA"}, {"ra": "20482523045", "nome": "RAFAEL GOMES DA SILVA"}, {"ra": "20482523028", "nome": "WALLACE COSTA DE ANDRADE"}]}, "EQP15": {"tema": "Turismo e Eventos: ocupação, sazonalidade e avaliações", "membros": [{"ra": "20482523057", "nome": "ARTHUR CIOL CALIXTO CID"}, {"ra": "20482523054", "nome": "FELIPE PRAIS ALMEIDA"}, {"ra": "20482523060", "nome": "PEDRO BISPO DA SILVA"}, {"ra": "20482523075", "nome": "PEDRO HENRIQUE MOREIRA DE MELLO"}, {"ra": "20482523047", "nome": "PEDRO HENRIQUE PACHECO"}]}, "EQP16": {"tema": "Mobilidade Urbana: monitoramento do transporte público", "membros": [{"ra": "20482523036", "nome": "EDUARDO YUJI SHIBATA"}, {"ra": "20482523016", "nome": "FELIPE SILVA OLIVEIRA"}, {"ra": "20482523021", "nome": "LEANDRO PEREIRA SARAIVA"}, {"ra": "20482523025", "nome": "LUAN OLIVEIRA CARLOS DE LIRA"}, {"ra": "20482523034", "nome": "MARCELO HENRIQUE SALVIANO RODRIGUES"}]}, "EQP17": {"tema": "Mercado de Trabalho em Tecnologia: vagas, salários e habilidades", "membros": [{"ra": "20482511028", "nome": "MATHEUS GUIDES RUBIM FONSECA"}, {"ra": "20482511012", "nome": "NATHAN CAMPOS NAGANO"}]}, "EQP18": {"tema": "Varejo e E-commerce: desempenho de vendas, logística e clientes", "membros": [{"ra": "20482513037", "nome": "THOMAZ FERREIRA NEVES DOS SANTOS"}]}, "EQP19": {"tema": "Turismo e Eventos: ocupação, sazonalidade e avaliações", "membros": [{"ra": "20482313040", "nome": "CÉSAR ROCHA NASCIMENTO"}, {"ra": "20482421030", "nome": "MARINA GUSMAO FARIA BARBOSA BUENO"}, {"ra": "20482313097", "nome": "PEDRO HENRIQUE OLIVEIRA DE FARIAS"}, {"ra": "20482521048", "nome": "VICENTE ORLANDO FRESILLO"}, {"ra": "22106311", "nome": "VICTORIA OLIVEIRA DE SOUZA"}]}, "EQP20": {"tema": "Saúde Pública: indicadores epidemiológicos e hospitalares", "membros": [{"ra": "20482623091", "nome": "YASMIN VICTORIA BERNARDES SILVA"}]}, "EQP21": {"tema": "Turismo e Eventos: ocupação, sazonalidade e avaliações", "membros": [{"ra": "22106759", "nome": "AMANDA PIRES CARDOSO"}]}, "EQP22": {"tema": "Turismo e Eventos: ocupação, sazonalidade e avaliações", "membros": []}, "EQP23": {"tema": "Varejo e E-commerce: desempenho de vendas, logística e clientes", "membros": []}, "EQP24": {"tema": "Saúde Pública: indicadores epidemiológicos e hospitalares", "membros": []}, "EQP25": {"tema": "Saúde Pública: indicadores epidemiológicos e hospitalares", "membros": []}, "EQP99": {"tema": "", "membros": [{"ra": "20482413096", "nome": "GUSTAVO GOMES PLATINE"}, {"ra": "20482513074", "nome": "HERCULES MONTEIRO SOUSA"}]}}, "semEquipe": [{"ra": "20482523027", "nome": "ANDERSON EDILSON PRESOTO"}, {"ra": "20482522029", "nome": "DANIEL DOS SANTOS NAKAMURA"}, {"ra": "22210176", "nome": "DANIEL FERREIRA SANTANA"}, {"ra": "20482522022", "nome": "DAVI TOSATTI SILVA"}, {"ra": "20482413025", "nome": "DOUGLAS GREGORY DE SANTANA SILVA"}, {"ra": "20482513087", "nome": "EBERTON TRINDADE CAMARGO DA SILVA"}, {"ra": "20482623083", "nome": "FABIANO LOPES NEVES"}, {"ra": "20482623093", "nome": "GABRIEL FELIPE DE OLIVEIRA MARCONDES"}, {"ra": "20482423023", "nome": "GABRIEL FRANCISCO DOS SANTOS"}, {"ra": "20482523046", "nome": "GABRIEL MOREIRA BARRETO DE MAGALHAES"}, {"ra": "20200170", "nome": "GILSON SANTANA LEONCIO"}, {"ra": "20482511017", "nome": "GUILHERME HENRIQUE DE PAULA"}, {"ra": "20482313076", "nome": "GUILHERME NASCIMENTO TEIXEIRA"}, {"ra": "20482422022", "nome": "GUSTAVO DOS SANTOS PEREIRA"}, {"ra": "20482513047", "nome": "GUSTAVO OLIVEIRA DA SILVA"}, {"ra": "20482413044", "nome": "JOAO PAULO MASCENA GOMES"}, {"ra": "20482422045", "nome": "JOAO PEDRO GALDINO DE OLIVEIRA"}, {"ra": "22106356", "nome": "JOAO VITOR DOS SANTOS COSTA"}, {"ra": "22106946", "nome": "JOAO WICTOR LELES SANTOS"}, {"ra": "20482623079", "nome": "KEVIN VALENTIM ARAUJO"}, {"ra": "20482523022", "nome": "LEONARDO DE PAULA FERNANDES"}, {"ra": "22205363", "nome": "LEONARDO HENRIQUE SANTOS MERIDA"}, {"ra": "20482523049", "nome": "LEONARDO ROCHA DA SILVA"}, {"ra": "20482413029", "nome": "LEVI LIMA BELTRAO"}, {"ra": "21206482", "nome": "LUIS AUGUSTO DE MATTOS CODONHO FERREIRA"}, {"ra": "20482323079", "nome": "MARCELO LUQUE SIMOES"}, {"ra": "20482523005", "nome": "MARIA CAROLINA DOMINGUES"}, {"ra": "20482513080", "nome": "MATHEUS SANTOS SILVA"}, {"ra": "20482413101", "nome": "MAURICIO LEANDRO SANTOS SILVA"}, {"ra": "20482512043", "nome": "MURILO HIDEKI HIRATA"}, {"ra": "20482523076", "nome": "PEDRO NARDES SILVA"}, {"ra": "20482422034", "nome": "RAFAEL PAZELO INFORSATO"}, {"ra": "20482521045", "nome": "RAFAEL SURASAK MERKLE"}, {"ra": "20482523055", "nome": "RAPHAEL OLIVEIRA ABREU"}, {"ra": "20482313026", "nome": "RENAN SILVA DE MELO"}, {"ra": "20482522047", "nome": "TABATHA TAWANI TAGUCHI"}, {"ra": "20482512042", "nome": "VINICIUS BROTI CIDRO"}, {"ra": "20482423009", "nome": "VITOR VASCONCELLOS DO NASCIMENTO CAMARGO"}]};
+</script>
+<script>
+const TEMAS = [
+  {
+    id: 1,
+    nome: "Mobilidade Urbana",
+    subnome: "Monitoramento do transporte público",
+    icon: "🚌",
+    cor: "mob",
+    projeto: "Painel de Monitoramento da Mobilidade Urbana",
+    contexto: "Cidades grandes enfrentam desafios diários de deslocamento — atrasos, superlotação e variação de demanda entre linhas de ônibus, metrô ou bicicletas compartilhadas.",
+    pergunta: "Quais linhas, horários e regiões apresentam pior desempenho de mobilidade, e o que isso indica para a gestão do sistema de transporte?",
+    fontes: "Dados abertos de prefeituras/companhias de transporte (SPTrans, EMTU, CPTM), portais de dados abertos governamentais, ou planilhas históricas fornecidas/simuladas pela equipe.",
+    dados: "Linha, horário, estação/ponto, tempo de viagem, atraso, ocupação, região, dia da semana.",
+    indicadores: "Atraso médio por linha, taxa de ocupação média, horário de pico crítico, índice de pontualidade, variação de demanda por dia da semana.",
+    api: "API de dados climáticos (correlacionar chuva com atrasos) ou API de geolocalização/distâncias.",
+    vba: "Rotina que gera automaticamente um resumo diário/semanal das linhas com pior desempenho.",
+    sql: "Tabelas de linhas, estações e viagens relacionadas por chaves; consultas para ranquear linhas por atraso médio.",
+    powerbi: "Dashboard com mapa/ranking de linhas críticas, evolução temporal de atrasos e filtros por região e período."
+  },
+  {
+    id: 2,
+    nome: "Mercado de Trabalho em Tecnologia",
+    subnome: "Vagas, salários e habilidades",
+    icon: "💼",
+    cor: "mkt",
+    projeto: "Radar do Mercado de Trabalho em TI",
+    contexto: "O mercado de tecnologia muda rapidamente em termos de vagas abertas, salários e habilidades exigidas, dificultando o planejamento de carreira dos estudantes.",
+    pergunta: "Quais são as habilidades e cargos de TI mais demandados atualmente, e como variam salário e demanda por região/senioridade?",
+    fontes: "Planilhas com vagas coletadas manualmente/simuladas, dados abertos de pesquisas salariais do setor, portais de vagas (dados exportados/simulados).",
+    dados: "Cargo, senioridade, tecnologia/habilidade exigida, salário, região, modalidade (remoto/presencial), data de publicação da vaga.",
+    indicadores: "Salário médio por cargo/senioridade, habilidades mais citadas, proporção de vagas remotas, tempo médio de vaga aberta.",
+    api: "API de cotação de moeda (normalizar salários em USD/BRL) ou API com índices econômicos (inflação).",
+    vba: "Rotina para consolidar novas vagas cadastradas em uma aba 'bruta' e gerar um resumo automático por tecnologia.",
+    sql: "Tabelas de vagas, empresas e tecnologias relacionadas; consultas para listar tecnologias mais associadas a maiores salários.",
+    powerbi: "Dashboard com ranking de habilidades, mapa salarial por região/senioridade e evolução de vagas ao longo do tempo."
+  },
+  {
+    id: 3,
+    nome: "Turismo e Eventos",
+    subnome: "Ocupação, sazonalidade e avaliações",
+    icon: "🧳",
+    cor: "tur",
+    projeto: "Observatório de Turismo e Eventos",
+    contexto: "Destinos turísticos e organizadores de eventos precisam entender padrões de ocupação, sazonalidade e satisfação do público para planejar melhor sua oferta.",
+    pergunta: "Quais períodos, destinos ou tipos de evento apresentam maior ocupação e melhor avaliação, e o que isso sugere para planejamento futuro?",
+    fontes: "Dados abertos de secretarias de turismo, planilhas de ocupação hoteleira simuladas, avaliações de eventos/pontos turísticos coletadas ou simuladas.",
+    dados: "Destino/evento, data, categoria, preço, taxa de ocupação, nota de avaliação, número de visitantes.",
+    indicadores: "Taxa média de ocupação, sazonalidade (mês de pico/baixa), nota média de avaliação, ticket médio.",
+    api: "API de previsão do tempo (correlacionar clima com ocupação) ou API de feriados/calendário de eventos.",
+    vba: "Geração automática de relatório mensal de ocupação por destino/evento.",
+    sql: "Tabelas de destinos, eventos e reservas/avaliações relacionadas; consultas para identificar destinos com melhor desempenho por temporada.",
+    powerbi: "Dashboard sazonal com mapa de destinos, evolução mensal de ocupação e ranking de avaliações."
+  },
+  {
+    id: 4,
+    nome: "Saúde Pública",
+    subnome: "Indicadores epidemiológicos e hospitalares",
+    icon: "🏥",
+    cor: "sau",
+    projeto: "Painel de Indicadores de Saúde Pública",
+    contexto: "Gestores de saúde precisam acompanhar indicadores como ocupação de leitos, cobertura vacinal e incidência de doenças para tomar decisões rápidas.",
+    pergunta: "Como evoluem os indicadores de saúde (ocupação de leitos, vacinação, casos notificados) por região e período, e onde estão os pontos de atenção?",
+    fontes: "Dados abertos de saúde (DATASUS, portais estaduais/municipais), planilhas históricas simuladas de unidades de saúde.",
+    dados: "Região, data, doença/agravo, número de casos, número de leitos ocupados/disponíveis, doses de vacina aplicadas.",
+    indicadores: "Taxa de ocupação de leitos, cobertura vacinal (%), taxa de incidência por 100 mil habitantes, tendência de casos.",
+    api: "API de dados demográficos (população por região, para cálculo de taxas) ou API climática (sazonalidade de doenças respiratórias).",
+    vba: "Rotina que atualiza automaticamente um resumo semanal de indicadores críticos por região.",
+    sql: "Tabelas de unidades de saúde, regiões e ocorrências relacionadas; consultas para identificar regiões com maior sobrecarga.",
+    powerbi: "Dashboard com mapa de regiões críticas, evolução temporal de casos/ocupação e indicadores de cobertura vacinal."
+  },
+  {
+    id: 5,
+    nome: "Varejo e E-commerce",
+    subnome: "Vendas, logística e clientes",
+    icon: "🛒",
+    cor: "var",
+    projeto: "Painel de Desempenho Operacional e de Vendas no E-commerce",
+    contexto: "Operações de comércio eletrônico geram grandes volumes de transações diárias e precisam monitorar vendas, desempenho logístico e perfil do cliente para manter a rentabilidade.",
+    pergunta: "Quais categorias de produtos e regiões apresentam maior faturamento e quais gargalos logísticos afetam a satisfação do cliente?",
+    fontes: "Datasets públicos de e-commerce (ex.: Olist no Kaggle), dados abertos de portais de consumo, planilhas históricas de vendas e entregas simuladas.",
+    dados: "Código do pedido, data da compra, categoria do produto, valor, frete, status da entrega, estado/região do cliente, forma de pagamento, nota de avaliação.",
+    indicadores: "Faturamento total, ticket médio, tempo médio de entrega (previsto vs. realizado), taxa de cancelamento/atraso, nota média de satisfação.",
+    api: "API de cotação de moedas, API de CEP/geolocalização ou API de dados econômicos (IPCA/inflação).",
+    vba: "Rotina que lê as vendas do dia na aba bruta e gera um resumo automático diário de faturamento e itens em atraso.",
+    sql: "Tabelas relacionais de Clientes, Pedidos, Itens do Pedido, Produtos e Entregas; consultas para calcular ticket médio e ranquear produtos por estado.",
+    powerbi: "Dashboard interativo com mapa de vendas por estado, evolução mensal do faturamento, cumprimento de prazos logísticos e ranking de categorias."
+  }
+];
+
+const PIPELINE_STEPS = ["Excel", "Power Query", "Power Pivot / DAX", "VBA", "Banco de Dados / SQL", "APIs / Web", "Power BI"];
+
+function temaKeyFromString(str){
+  if(!str) return null;
+  const s = str.toLowerCase();
+  if(s.startsWith("mobilidade")) return "mob";
+  if(s.startsWith("mercado")) return "mkt";
+  if(s.startsWith("turismo")) return "tur";
+  if(s.startsWith("saúde") || s.startsWith("saude")) return "sau";
+  if(s.startsWith("varejo")) return "var";
+  return null;
+}
+
+function temaById(key){ return TEMAS.find(t => t.cor === key); }
+
+// ---------------- Pipeline ----------------
+(function renderPipeline(){
+  const el = document.getElementById('pipeline');
+  el.innerHTML = PIPELINE_STEPS.map((s,i)=>`
+    <div class="pipe-node done">
+      <div class="dot"></div>
+      <div class="lbl">${s}</div>
+    </div>`).join('');
+})();
+
+// ---------------- Orbit pins ----------------
+(function renderOrbit(){
+  const shell = document.getElementById('orbitShell');
+  const R = 44; // percent radius
+  const n = TEMAS.length;
+  TEMAS.forEach((t, i) => {
+    const angle = (-90 + i * (360/n)) * Math.PI/180;
+    const x = 50 + R*Math.cos(angle);
+    const y = 50 + R*Math.sin(angle);
+    const count = Object.values(TEAM_DATA.teams).filter(tm => temaKeyFromString(tm.tema) === t.cor).length;
+    const pin = document.createElement('div');
+    pin.className = 'pin';
+    pin.style.left = x+'%';
+    pin.style.top = y+'%';
+    pin.dataset.tema = t.id;
+    pin.innerHTML = `
+      <div class="head" style="border-color:var(--c-${t.cor}); box-shadow:0 0 0 5px var(--c-${t.cor}-soft);">${t.icon}</div>
+      <div class="lbl">${t.nome}</div>
+      <div class="count">${count} equipe${count===1?'':'s'}</div>
+    `;
+    pin.addEventListener('click', () => showTemaDetail(t.id));
+    shell.appendChild(pin);
+  });
+})();
+
+function showTemaDetail(id){
+  document.querySelectorAll('.pin').forEach(p => p.classList.toggle('active', Number(p.dataset.tema)===id));
+  const t = TEMAS.find(x=>x.id===id);
+  const teams = Object.entries(TEAM_DATA.teams)
+    .filter(([code, tm]) => temaKeyFromString(tm.tema) === t.cor)
+    .sort((a,b)=>a[0].localeCompare(b[0]));
+
+  const html = `
+    <div class="tema-detail active">
+      <span class="tag" style="background:var(--c-${t.cor}-soft); color:var(--c-${t.cor});">${t.icon}&nbsp; Tema ${t.id} · ${t.nome}</span>
+      <h3>${t.projeto}</h3>
+      <p class="central"><strong>Pergunta central:</strong> ${t.pergunta}</p>
+      <div class="tema-grid">
+        <div class="tema-field"><h4>Contexto</h4><p>${t.contexto}</p></div>
+        <div class="tema-field"><h4>Fontes de dados</h4><p>${t.fontes}</p></div>
+        <div class="tema-field"><h4>Dados utilizados</h4><p>${t.dados}</p></div>
+        <div class="tema-field"><h4>Indicadores / KPIs</h4><p>${t.indicadores}</p></div>
+        <div class="tema-field"><h4>Dados externos / API</h4><p>${t.api}</p></div>
+        <div class="tema-field"><h4>Automação (VBA)</h4><p>${t.vba}</p></div>
+        <div class="tema-field"><h4>Banco de dados / SQL</h4><p>${t.sql}</p></div>
+        <div class="tema-field"><h4>Resultado no Power BI</h4><p>${t.powerbi}</p></div>
+      </div>
+      <div class="tema-teams">
+        <h4>Equipes com este tema (${teams.length})</h4>
+        <div class="chip-row">
+          ${teams.map(([code]) => `<span class="chip" data-goto-team="${code}">${code}</span>`).join('') || '<span style="color:var(--ink-faint); font-size:13px;">Nenhuma equipe com este tema ainda.</span>'}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('temaDetailWrap').innerHTML = html;
+  document.querySelectorAll('[data-goto-team]').forEach(chip=>{
+    chip.addEventListener('click', () => {
+      switchView('buscar');
+      document.getElementById('teamSelect').value = chip.dataset.gotoTeam;
+      renderTeamResult(chip.dataset.gotoTeam);
+    });
+  });
+  document.getElementById('temaDetailWrap').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+showTemaDetail(1);
+
+// ---------------- Tabs ----------------
+function switchView(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  document.querySelectorAll('section.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
+  window.scrollTo({top: document.querySelector('nav.tabs').offsetTop, behavior:'smooth'});
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click', ()=>switchView(b.dataset.view)));
+
+// ---------------- Buscar por RA ----------------
+function findByRA(ra){
+  ra = ra.trim();
+  if(!ra) return null;
+  for(const [code, tm] of Object.entries(TEAM_DATA.teams)){
+    const found = tm.membros.find(m => m.ra === ra);
+    if(found) return {aluno: found, equipe: code, tema: tm.tema};
+  }
+  const noteam = TEAM_DATA.semEquipe.find(m => m.ra === ra);
+  if(noteam) return {aluno: noteam, equipe: null, tema: null};
+  return undefined;
+}
+
+document.getElementById('raBtn').addEventListener('click', doRaSearch);
+document.getElementById('raInput').addEventListener('keydown', e => { if(e.key==='Enter') doRaSearch(); });
+
+function doRaSearch(){
+  const ra = document.getElementById('raInput').value;
+  const box = document.getElementById('raResult');
+  const res = findByRA(ra);
+  if(res === null){
+    box.innerHTML = 'Digite um RA para buscar.';
+  } else if(res === undefined){
+    box.innerHTML = `Nenhum aluno encontrado com o RA <span class="found-team">${ra}</span>.`;
+  } else if(res.equipe === null){
+    box.innerHTML = `<span class="found-name">${res.aluno.nome}</span> (RA ${res.aluno.ra}) ainda está <strong style="color:#F0899A;">sem equipe definida</strong>.`;
+  } else {
+    box.innerHTML = `<span class="found-name">${res.aluno.nome}</span> (RA ${res.aluno.ra}) está na equipe <span class="found-team">${res.equipe}</span><br>Tema: ${res.tema || '<em>não definido</em>'}`;
+  }
+}
+
+// ---------------- Buscar por Equipe ----------------
+(function fillTeamSelect(){
+  const sel = document.getElementById('teamSelect');
+  sel.innerHTML = '<option value="">Selecione…</option>' +
+    Object.keys(TEAM_DATA.teams).sort().map(code=>`<option value="${code}">${code} — ${TEAM_DATA.teams[code].membros.length} integrante(s)</option>`).join('');
+  sel.addEventListener('change', () => renderTeamResult(sel.value));
+})();
+
+function renderTeamResult(code){
+  const box = document.getElementById('teamResult');
+  if(!code){ box.innerHTML = 'Selecione uma equipe.'; return; }
+  const tm = TEAM_DATA.teams[code];
+  box.innerHTML = `
+    <strong style="color:var(--ink); font-family:'Inter',sans-serif;">${code}</strong> — ${tm.tema || '<em>tema não definido</em>'}
+    <ul class="member-list">
+      ${tm.membros.map(m=>`<li><span>${m.nome}</span><span class="m-ra">${m.ra}</span></li>`).join('') || '<li><span style="color:var(--ink-faint);">Nenhum aluno cadastrado nesta equipe.</span></li>'}
+    </ul>
+  `;
+}
+
+// ---------------- Sem equipe ----------------
+(function renderNoTeam(){
+  const list = TEAM_DATA.semEquipe;
+  document.getElementById('noteamCount').textContent = `${list.length} aluno(s) constam com equipe = "xxx" na planilha e ainda precisam ser alocados.`;
+  document.getElementById('noteamGrid').innerHTML = list.map(m=>`
+    <div class="noteam-item"><span>${m.nome}</span><span class="m-ra">${m.ra}</span></div>
+  `).join('');
+})();
+
+// ---------------- Todas as equipes ----------------
+const CORES = ['mob','mkt','tur','sau','var'];
+(function renderFilters(){
+  const row = document.getElementById('filterRow');
+  const all = document.createElement('button');
+  all.className = 'filter-btn active';
+  all.dataset.filter = 'all';
+  all.innerHTML = `<span class="sw" style="background:var(--ink-dim);"></span> Todas`;
+  row.appendChild(all);
+  TEMAS.forEach(t=>{
+    const b = document.createElement('button');
+    b.className = 'filter-btn';
+    b.dataset.filter = t.cor;
+    b.style.color = `var(--c-${t.cor})`;
+    b.innerHTML = `<span class="sw" style="background:var(--c-${t.cor});"></span> ${t.nome}`;
+    row.appendChild(b);
+  });
+  const none = document.createElement('button');
+  none.className = 'filter-btn';
+  none.dataset.filter = 'none';
+  none.style.color = 'var(--c-none)';
+  none.innerHTML = `<span class="sw" style="background:var(--c-none);"></span> Sem tema`;
+  row.appendChild(none);
+
+  row.addEventListener('click', e=>{
+    const btn = e.target.closest('.filter-btn');
+    if(!btn) return;
+    row.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTeamGrid(btn.dataset.filter);
+  });
+})();
+
+function renderTeamGrid(filter){
+  const grid = document.getElementById('teamGrid');
+  const entries = Object.entries(TEAM_DATA.teams).sort((a,b)=>a[0].localeCompare(b[0]));
+  grid.innerHTML = entries.map(([code, tm])=>{
+    const key = temaKeyFromString(tm.tema) || 'none';
+    if(filter !== 'all' && filter !== key) return '';
+    const cssVar = key === 'none' ? 'var(--c-none)' : `var(--c-${key})`;
+    return `
+      <div class="team-card" style="border-left-color:${cssVar};" data-code="${code}">
+        <div class="tc-top">
+          <span class="tc-code">${code}</span>
+          <span class="tc-n">${tm.membros.length} integrante${tm.membros.length===1?'':'s'}</span>
+        </div>
+        <div class="tc-tema">${tm.tema || 'Tema ainda não definido'}</div>
+        <div class="tc-members">
+          ${tm.membros.map(m=>`<span>${m.nome} <em>${m.ra}</em></span>`).join('') || '<span style="color:var(--ink-faint);">Sem alunos cadastrados</span>'}
+        </div>
+      </div>
+    `;
+  }).join('');
+  grid.querySelectorAll('.team-card').forEach(card=>{
+    card.addEventListener('click', ()=> card.classList.toggle('open'));
+  });
+}
+renderTeamGrid('all');
+
+// ---------------- Matriz Equipe x Tema ----------------
+(function renderMatrix(){
+  const wrap = document.getElementById('matrixWrap');
+  const groups = {};
+  TEMAS.forEach(t => groups[t.cor] = {tema: t, teams: []});
+  groups['none'] = {tema: {nome:'Tema não definido', icon:'❔'}, teams: []};
+
+  Object.entries(TEAM_DATA.teams).forEach(([code, tm])=>{
+    const key = temaKeyFromString(tm.tema) || 'none';
+    groups[key].teams.push([code, tm.membros.length]);
+  });
+
+  wrap.innerHTML = Object.entries(groups).map(([key, g])=>{
+    if(g.teams.length === 0) return '';
+    const cssVar = key === 'none' ? 'var(--c-none)' : `var(--c-${key})`;
+    g.teams.sort((a,b)=>a[0].localeCompare(b[0]));
+    return `
+      <div class="matrix-group">
+        <div class="mg-head">
+          <span class="sw" style="background:${cssVar};"></span>
+          <h3>${g.tema.nome}</h3>
+          <span class="mg-count">${g.teams.length} equipe${g.teams.length===1?'':'s'} · ${g.teams.reduce((s,x)=>s+x[1],0)} alunos</span>
+        </div>
+        <div class="matrix-teams">
+          ${g.teams.map(([code,n])=>`
+            <div class="matrix-team" style="border-top:2px solid ${cssVar};">
+              <div class="mt-code">${code}</div>
+              <div class="mt-n">${n} integrante${n===1?'':'s'}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+})();
+</script>
+</body>
+</html>
